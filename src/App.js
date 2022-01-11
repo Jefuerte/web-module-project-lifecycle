@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import User from "./components/User";
 import FollowerList from "./components/FollowerList";
 
@@ -6,26 +7,36 @@ class App extends React.Component {
  state = {
    currentUser: "jefuerte",
    user: {
-    avatar_url: "https://avatars.githubusercontent.com/u/91096674?v=4",
-    html_url: "https://github.com/Jefuerte",
-    name: "Jessica Fuerte",
-    login: "Jefuerte",
-    public_repos: 32,
-    followers: 2,
+      
    },
    followers: [
-     {
-      login: "Cheyenneb96",
-      avatar_url: "https://avatars.githubusercontent.com/u/75545636?v=4",
-      html_url: "https://github.com/Cheyenneb96",
-     },
-     {
-      login: "Cheyenneb96",
-      avatar_url: "https://avatars.githubusercontent.com/u/75545636?v=4",
-      html_url: "https://github.com/Cheyenneb96",
-     }
    ]
  }
+
+ componentDidMount () {
+   axios.get(`https://api.github.com/users/${this.state.currentUser}`)
+    .then(resp=> {
+     this.setState({
+       ...this.state,
+       user: resp.data
+     })
+    })
+ }
+
+componentDidUpdate (prevProps, prevState) {
+  if(this.state.user !== prevState.user) {
+    axios.get(`https://api.github.com/users/${this.state.currentUser}/followers`)
+    .then(resp=> {
+      
+      this.setState({
+       ...this.state,
+       followers: resp.data
+      })
+    })
+  }
+}
+
+
   render() {
     return(<div>
       <h1>Github Info</h1>
